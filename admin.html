@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Input Menu Ramesan</title>
+  <title>Admin - Ramesan Tebet</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #f3f3f3;
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
       margin: 0;
       padding: 0;
       display: flex;
@@ -15,86 +15,87 @@
       align-items: center;
       height: 100vh;
     }
-    .admin-box {
-      background: white;
+    .container {
+      background-color: #fff;
       padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       width: 90%;
       max-width: 400px;
     }
-    input, textarea {
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      color: #555;
+    }
+    input, textarea, button {
       width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
       border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
     button {
-      padding: 0.75rem;
-      width: 100%;
-      border: none;
-      background: #007bff;
+      background-color: #1e88e5;
       color: white;
-      font-weight: bold;
-      border-radius: 8px;
+      border: none;
       cursor: pointer;
+      margin-top: 1.5rem;
     }
-    #form-area { display: none; }
-    .error { color: red; font-size: 0.9rem; margin-bottom: 1rem; }
+    button:hover {
+      background-color: #1565c0;
+    }
   </style>
 </head>
 <body>
-  <div class="admin-box">
-    <h2>Login Admin</h2>
-    <input type="password" id="password" placeholder="Masukkan password">
-    <div class="error" id="error-msg"></div>
-    <button onclick="login()">Masuk</button>
+  <div class="container">
+    <h2>Admin Ramesan Tebet</h2>
+    <form id="menu-form">
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
 
-    <div id="form-area">
-      <h3>Input Menu Harian</h3>
-      <input type="date" id="tanggal">
-      <textarea id="menu" rows="5" placeholder="Contoh: Nasi Goreng; Ayam Bakar"></textarea>
-      <button onclick="submitMenu()">Kirim Menu</button>
-      <p style="font-size: 0.9rem; color: #666; margin-top: 1rem;">Untuk menghapus menu: kosongkan kolom menu dan klik Kirim.</p>
-    </div>
+      <label for="tanggal">Tanggal (YYYY-MM-DD):</label>
+      <input type="date" id="tanggal" name="tanggal" required>
+
+      <label for="menu">Menu (pisahkan dengan titik koma):</label>
+      <textarea id="menu" name="menu" rows="4" required></textarea>
+
+      <button type="submit">Kirim Menu</button>
+    </form>
   </div>
 
   <script>
-    const PASSWORD = "admin123"; // ganti password sesuai keinginanmu
     const scriptURL = "https://script.google.com/macros/s/AKfycbyGDKqgEa4Q1TPG5u_5dSByJQGln9AICCO-_Cabxvpb_Qp0tnSjG83ezcOME1-GCmawOA/exec";
+    const form = document.getElementById('menu-form');
 
-    function login() {
-      const pass = document.getElementById("password").value;
-      const error = document.getElementById("error-msg");
-      if (pass === PASSWORD) {
-        document.getElementById("form-area").style.display = "block";
-        document.getElementById("password").style.display = "none";
-        document.querySelector("button").style.display = "none";
-        error.textContent = "";
-      } else {
-        error.textContent = "Password salah.";
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const password = document.getElementById('password').value;
+      if (password !== "RamesanTebet22") {
+        alert("Password salah!");
+        return;
       }
-    }
 
-    function submitMenu() {
-      const tanggal = document.getElementById("tanggal").value;
-      const menu = document.getElementById("menu").value;
-      if (!tanggal) return alert("Tanggal wajib diisi!");
-
+      const formData = new FormData(form);
       fetch(scriptURL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: `tanggal=${encodeURIComponent(tanggal)}&menu=${encodeURIComponent(menu)}`
+        method: 'POST',
+        body: new URLSearchParams(formData)
+      })
+      .then(response => {
+        alert('Menu berhasil dikirim!');
+        form.reset();
+      })
+      .catch(error => {
+        alert('Gagal mengirim menu.');
+        console.error('Error!', error.message);
       });
-
-      alert("Menu berhasil dikirim.");
-      document.getElementById("tanggal").value = "";
-      document.getElementById("menu").value = "";
-    }
+    });
   </script>
 </body>
 </html>
