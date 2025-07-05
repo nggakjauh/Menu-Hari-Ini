@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Input Menu Ramesan</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f3f3f3;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .admin-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      padding: 0.75rem;
+      width: 100%;
+      border: none;
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #form-area { display: none; }
+    .error { color: red; font-size: 0.9rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="admin-box">
+    <h2>Login Admin</h2>
+    <input type="password" id="password" placeholder="Masukkan password">
+    <div class="error" id="error-msg"></div>
+    <button onclick="login()">Masuk</button>
+
+    <div id="form-area">
+      <h3>Input Menu Harian</h3>
+      <input type="date" id="tanggal">
+      <textarea id="menu" rows="5" placeholder="Contoh: Nasi Goreng; Ayam Bakar"></textarea>
+      <button onclick="submitMenu()">Kirim Menu</button>
+      <p style="font-size: 0.9rem; color: #666; margin-top: 1rem;">Untuk menghapus menu: kosongkan kolom menu dan klik Kirim.</p>
+    </div>
+  </div>
+
+  <script>
+    const PASSWORD = "admin123"; // ganti password sesuai keinginanmu
+    const scriptURL = "GANTI_DENGAN_LINK_GOOGLE_APPS_SCRIPT";
+
+    function login() {
+      const pass = document.getElementById("password").value;
+      const error = document.getElementById("error-msg");
+      if (pass === PASSWORD) {
+        document.getElementById("form-area").style.display = "block";
+        document.getElementById("password").style.display = "none";
+        document.querySelector("button").style.display = "none";
+        error.textContent = "";
+      } else {
+        error.textContent = "Password salah.";
+      }
+    }
+
+    function submitMenu() {
+      const tanggal = document.getElementById("tanggal").value;
+      const menu = document.getElementById("menu").value;
+      if (!tanggal) return alert("Tanggal wajib diisi!");
+
+      fetch(scriptURL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `tanggal=${encodeURIComponent(tanggal)}&menu=${encodeURIComponent(menu)}`
+      });
+
+      alert("Menu berhasil dikirim.");
+      document.getElementById("tanggal").value = "";
+      document.getElementById("menu").value = "";
+    }
+  </script>
+</body>
+</html>
