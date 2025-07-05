@@ -114,13 +114,13 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" style="width: 48px; height: 48px;">
       </a>
       <a href="https://www.tiktok.com/@ramesantebet" target="_blank" class="social-icon">
-        <img src="tiktok.png" alt="TikTok" style="width: 48px; height: 48px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/TikTok_logo.svg" alt="TikTok" style="width: 48px; height: 48px;">
       </a>
     </div>
   </div>
 
   <script>
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLjhSHp-mToDOMXCMrsvp819udyGqVAEg0U2VqBMaQWoDkrTC_RIxP8ZhswC49VqXZWaJM5LD6_8-T/pub?output=csv";
+    const jsonURL = "https://raw.githubusercontent.com/nggakjauh/Menu-Hari-Ini/main/menu.json";
 
     function formatDate(date) {
       return date.toISOString().split('T')[0];
@@ -128,29 +128,23 @@
 
     async function loadMenu() {
       try {
-        const response = await fetch(sheetURL + "&nocache=" + Date.now());
-        const text = await response.text();
-        const rows = text.split('\n').slice(1);
+        const response = await fetch(jsonURL + '?nocache=' + Date.now());
+        const data = await response.json();
         const today = formatDate(new Date());
 
-        for (const row of rows) {
-          const [tanggal, menu] = row.split(',');
-          if (tanggal === today) {
-            const items = menu.split(';').map(item => item.trim());
-            const menuList = document.getElementById('menu-list');
-            menuList.innerHTML = '';
-            items.forEach(item => {
-              const li = document.createElement('li');
-              li.textContent = item;
-              menuList.appendChild(li);
-            });
-            document.getElementById('date-info').textContent = 'Diperbarui: ' + new Date().toLocaleDateString('id-ID');
-            return;
-          }
+        if (data.tanggal === today) {
+          const menuList = document.getElementById('menu-list');
+          menuList.innerHTML = '';
+          data.menu.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            menuList.appendChild(li);
+          });
+          document.getElementById('date-info').textContent = 'Diperbarui: ' + new Date().toLocaleDateString('id-ID');
+        } else {
+          document.getElementById('menu-list').innerHTML = '<li>Belum ada menu hari ini.</li>';
+          document.getElementById('date-info').textContent = '';
         }
-
-        document.getElementById('menu-list').innerHTML = '<li>Belum ada menu hari ini.</li>';
-        document.getElementById('date-info').textContent = '';
       } catch (err) {
         document.getElementById('menu-list').innerHTML = '<li>Gagal memuat menu.</li>';
         console.error('Error memuat menu:', err);
