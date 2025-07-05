@@ -72,12 +72,18 @@
   </div>
 
   <script>
-    const GITHUB_TOKEN = "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";
-    const ADMIN_PASSWORD = "admin22";
+    // Token akan dimasukkan melalui prompt setelah login
+let GITHUB_TOKEN = null;
+    const ADMIN_PASSWORD = "admin5758";
 
     function cekPassword() {
       const input = document.getElementById("password").value;
       if (input === ADMIN_PASSWORD) {
+        GITHUB_TOKEN = prompt("Masukkan GitHub Token:");
+        if (!GITHUB_TOKEN) {
+          alert("Token dibutuhkan untuk mengupdate menu.");
+          return;
+        }
         document.getElementById("login-section").style.display = "none";
         document.getElementById("form-section").style.display = "block";
       } else {
