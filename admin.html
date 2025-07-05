@@ -71,7 +71,7 @@
   </div>
 
   <div class="container" id="form-box" style="display:none;">
-    <h2>Input Menu Ramesan Tebet</h2>
+    <h2>Input / Ganti Menu Hari Ini</h2>
     <form id="menu-form">
       <label for="tanggal">Tanggal (YYYY-MM-DD):</label>
       <input type="date" id="tanggal" name="tanggal" required>
@@ -79,7 +79,7 @@
       <label for="menu">Menu (pisahkan dengan titik koma):</label>
       <textarea id="menu" name="menu" rows="4" required></textarea>
 
-      <button type="submit">Kirim Menu</button>
+      <button type="submit">Simpan Menu</button>
     </form>
     <ul id="menu-list"></ul>
   </div>
@@ -103,6 +103,7 @@
     form.addEventListener('submit', e => {
       e.preventDefault();
       const formData = new FormData(form);
+
       fetch(scriptURL, {
         method: 'POST',
         body: new URLSearchParams(formData)
@@ -110,15 +111,15 @@
       .then(response => response.text())
       .then(result => {
         if (result.includes("OK")) {
-          alert('Menu berhasil dikirim!');
+          alert('Menu berhasil disimpan atau diperbarui.');
           form.reset();
           loadMenu();
         } else {
-          alert('Gagal mengirim menu: ' + result);
+          alert('Gagal menyimpan menu: ' + result);
         }
       })
       .catch(error => {
-        alert('Gagal mengirim menu.');
+        alert('Gagal menyimpan menu.');
         console.error('Error!', error.message);
       });
     });
