@@ -87,7 +87,7 @@
   </div>
 
   <script>
-    const sheetURL = "https://script.google.com/macros/s/AKfycbw2ci2cmYvhRI1Tgv8I_AwcUXggdkuDmS9vts6TbP7UoG-0Yw7V4-duoKPxJHlfUsUSlA/exec";
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLjhSHp-mToDOMXCMrsvp819udyGqVAEg0U2VqBMaQWoDkrTC_RIxP8ZhswC49VqXZWaJM5LD6_8-T/pub?output=csv";
 
     function formatDate(date) {
       return date.toISOString().split('T')[0];
@@ -96,26 +96,31 @@
     async function loadMenu() {
       try {
         const response = await fetch(sheetURL);
-        const data = await response.json();
+        const text = await response.text();
+        const rows = text.split('\n').slice(1); // skip header
         const today = formatDate(new Date());
 
-        const todayMenu = data.find(item => item.tanggal === today);
-        const menuList = document.getElementById('menu-list');
-        const dateInfo = document.getElementById('date-info');
-
-        if (todayMenu) {
-          menuList.innerHTML = todayMenu.menu
-            .split(';')
-            .map(item => `<li>${item.trim()}</li>`)
-            .join('');
-          dateInfo.textContent = 'Diperbarui: ' + new Date().toLocaleDateString('id-ID');
-        } else {
-          menuList.innerHTML = '<li>Belum ada menu hari ini</li>';
-          dateInfo.textContent = '';
+        for (const row of rows) {
+          const [tanggal, menu] = row.split(',');
+          if (tanggal === today) {
+            const items = menu.split(';').map(item => item.trim());
+            const menuList = document.getElementById('menu-list');
+            menuList.innerHTML = '';
+            items.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item;
+              menuList.appendChild(li);
+            });
+            document.getElementById('date-info').textContent = 'Diperbarui: ' + new Date().toLocaleDateString('id-ID');
+            return;
+          }
         }
-      } catch (error) {
+
+        document.getElementById('menu-list').innerHTML = '<li>Belum ada menu hari ini.</li>';
+        document.getElementById('date-info').textContent = '';
+      } catch (err) {
         document.getElementById('menu-list').innerHTML = '<li>Gagal memuat menu.</li>';
-        console.error('Fetch error:', error);
+        console.error('Error memuat menu:', err);
       }
     }
 
