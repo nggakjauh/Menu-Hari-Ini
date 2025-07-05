@@ -50,6 +50,16 @@
     button:hover {
       background-color: #1565c0;
     }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 1rem;
+    }
+    li {
+      padding: 0.5rem;
+      border-bottom: 1px solid #eee;
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -71,6 +81,7 @@
 
       <button type="submit">Kirim Menu</button>
     </form>
+    <ul id="menu-list"></ul>
   </div>
 
   <script>
@@ -82,6 +93,7 @@
       if (inputPassword === ADMIN_PASSWORD) {
         document.getElementById("login-box").style.display = "none";
         document.getElementById("form-box").style.display = "block";
+        loadMenu();
       } else {
         alert("Password salah!");
       }
@@ -100,6 +112,7 @@
         if (result.includes("OK")) {
           alert('Menu berhasil dikirim!');
           form.reset();
+          loadMenu();
         } else {
           alert('Gagal mengirim menu: ' + result);
         }
@@ -109,6 +122,33 @@
         console.error('Error!', error.message);
       });
     });
+
+    function loadMenu() {
+      fetch(scriptURL)
+        .then(response => response.json())
+        .then(data => {
+          const today = new Date().toISOString().split('T')[0];
+          const todayMenu = data.find(item => item.tanggal === today);
+          const menuList = document.getElementById('menu-list');
+          menuList.innerHTML = '';
+
+          if (todayMenu) {
+            const items = todayMenu.menu.split(';');
+            items.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item.trim();
+              menuList.appendChild(li);
+            });
+          } else {
+            const li = document.createElement('li');
+            li.textContent = 'Belum ada menu hari ini.';
+            menuList.appendChild(li);
+          }
+        })
+        .catch(err => {
+          console.error('Gagal memuat menu:', err);
+        });
+    }
   </script>
 </body>
 </html>
