@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menu Hari Ini - Ramesan Tebet</title>
+  <title>Admin - Ramesan Tebet</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9f9f9;
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
       margin: 0;
       padding: 0;
       display: flex;
@@ -15,122 +15,140 @@
       align-items: center;
       height: 100vh;
     }
-
     .container {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
       padding: 2rem;
-      max-width: 500px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       width: 90%;
-      text-align: center;
+      max-width: 400px;
     }
-
-    .logo {
-  max-width: 240px;
-  margin-bottom: 1.5rem;
-}
-
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
+    h2 {
+      text-align: center;
       color: #333;
     }
-
+    label {
+      display: block;
+      margin-top: 1rem;
+      color: #555;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #1e88e5;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 1.5rem;
+    }
+    button:hover {
+      background-color: #1565c0;
+    }
     ul {
       list-style: none;
       padding: 0;
-      text-align: center;
-    }
-
-    li {
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #eee;
-      font-size: 1.1rem;
-      color: #555;
-    }
-
-    .date {
       margin-top: 1rem;
-      font-style: italic;
-      color: #888;
     }
-
-    footer {
-      margin-top: 2rem;
-      font-size: 0.9rem;
-      color: #aaa;
-    }
-      a.social-icon img {
-      transition: transform 0.3s ease, filter 0.3s ease;
-    }
-
-    a.social-icon img:hover {
-      transform: scale(1.15);
-      filter: brightness(1.2);
+    li {
+      padding: 0.5rem;
+      border-bottom: 1px solid #eee;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="logo.png" alt="Ramesan Tebet Logo" class="logo">
-    <p style="margin-top: -1rem; margin-bottom: 1.5rem; color: #666; font-size: 1rem;">Buka setiap hari: 10.00 – 21.00 WIB</p>
-    <h1>Menu Hari Ini</h1>
-    <ul id="menu-list">
-      <li>Memuat...</li>
-    </ul>
-    <p class="date" id="date-info">Sedang memuat tanggal...</p>
-    <footer>
-      &copy; 2025 Ramesan Tebet
-    </footer>
-    <div style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1.5rem;">
-  <a href="https://wa.me/6281234567890" target="_blank" class="social-icon">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 48px; height: 48px;">
-  </a>
-  <a href="https://www.instagram.com/ramesantebet" target="_blank" class="social-icon">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" style="width: 48px; height: 48px;">
-  </a>
-  <a href="https://www.tiktok.com/@ramesantebet" target="_blank" class="social-icon">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/TikTok_logo.svg" alt="TikTok" style="width: 48px; height: 48px;">
-  </a>
-</div>
+  <div class="container" id="login-box">
+    <h2>Login Admin</h2>
+    <label for="admin-password">Password:</label>
+    <input type="password" id="admin-password" required>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div class="container" id="form-box" style="display:none;">
+    <h2>Input Menu Ramesan Tebet</h2>
+    <form id="menu-form">
+      <label for="tanggal">Tanggal (YYYY-MM-DD):</label>
+      <input type="date" id="tanggal" name="tanggal" required>
+
+      <label for="menu">Menu (pisahkan dengan titik koma):</label>
+      <textarea id="menu" name="menu" rows="4" required></textarea>
+
+      <button type="submit">Kirim Menu</button>
+    </form>
+    <ul id="menu-list"></ul>
   </div>
 
   <script>
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLjhSHp-mToDOMXCMrsvp819udyGqVAEg0U2VqBMaQWoDkrTC_RIxP8ZhswC49VqXZWaJM5LD6_8-T/pub?output=csv"; // ganti dengan URL CSV publik Anda
+    const ADMIN_PASSWORD = "RamesanTebet22";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyGDKqgEa4Q1TPG5u_5dSByJQGln9AICCO-_Cabxvpb_Qp0tnSjG83ezcOME1-GCmawOA/exec";
 
-    function formatDate(date) {
-      return date.toISOString().split('T')[0];
+    function login() {
+      const inputPassword = document.getElementById("admin-password").value;
+      if (inputPassword === ADMIN_PASSWORD) {
+        document.getElementById("login-box").style.display = "none";
+        document.getElementById("form-box").style.display = "block";
+        loadMenu();
+      } else {
+        alert("Password salah!");
+      }
     }
 
-    async function loadMenu() {
-      const response = await fetch(sheetURL);
-      const text = await response.text();
-      const rows = text.split('\n').slice(1); // skip header
-      const today = formatDate(new Date());
+    const form = document.getElementById('menu-form');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      fetch(scriptURL, {
+        method: 'POST',
+        body: new URLSearchParams(formData)
+      })
+      .then(response => response.text())
+      .then(result => {
+        if (result.includes("OK")) {
+          alert('Menu berhasil dikirim!');
+          form.reset();
+          loadMenu();
+        } else {
+          alert('Gagal mengirim menu: ' + result);
+        }
+      })
+      .catch(error => {
+        alert('Gagal mengirim menu.');
+        console.error('Error!', error.message);
+      });
+    });
 
-      for (const row of rows) {
-        const [tanggal, menu] = row.split(',');
-        if (tanggal === today) {
-          const items = menu.split(';').map(item => item.trim());
+    function loadMenu() {
+      fetch(scriptURL)
+        .then(response => response.json())
+        .then(data => {
+          const today = new Date().toISOString().split('T')[0];
+          const todayMenu = data.find(item => item.tanggal === today);
           const menuList = document.getElementById('menu-list');
           menuList.innerHTML = '';
-          items.forEach(item => {
+
+          if (todayMenu) {
+            const items = todayMenu.menu.split(';');
+            items.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item.trim();
+              menuList.appendChild(li);
+            });
+          } else {
             const li = document.createElement('li');
-            li.textContent = item;
+            li.textContent = 'Belum ada menu hari ini.';
             menuList.appendChild(li);
-          });
-          document.getElementById('date-info').textContent = 'Diperbarui: ' + new Date().toLocaleDateString('id-ID');
-          return;
-        }
-      }
-
-      // Jika tidak ada menu untuk hari ini
-      document.getElementById('menu-list').innerHTML = '<li>Belum ada menu hari ini.</li>';
-      document.getElementById('date-info').textContent = '';
+          }
+        })
+        .catch(err => {
+          console.error('Gagal memuat menu:', err);
+        });
     }
-
-    loadMenu();
   </script>
 </body>
 </html>
