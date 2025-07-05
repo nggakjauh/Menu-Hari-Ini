@@ -74,36 +74,42 @@
   </div>
 
   <script>
-    const ADMIN_PASSWORD = "RamesanTebet22";
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyGDKqgEa4Q1TPG5u_5dSByJQGln9AICCO-_Cabxvpb_Qp0tnSjG83ezcOME1-GCmawOA/exec";
+  const ADMIN_PASSWORD = "RamesanTebet22";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbyGDKqgEa4Q1TPG5u_5dSByJQGln9AICCO-_Cabxvpb_Qp0tnSjG83ezcOME1-GCmawOA/exec";
 
-    function login() {
-      const inputPassword = document.getElementById("admin-password").value;
-      if (inputPassword === ADMIN_PASSWORD) {
-        document.getElementById("login-box").style.display = "none";
-        document.getElementById("form-box").style.display = "block";
-      } else {
-        alert("Password salah!");
-      }
+  function login() {
+    const inputPassword = document.getElementById("admin-password").value;
+    if (inputPassword === ADMIN_PASSWORD) {
+      document.getElementById("login-box").style.display = "none";
+      document.getElementById("form-box").style.display = "block";
+    } else {
+      alert("Password salah!");
     }
+  }
 
-    const form = document.getElementById('menu-form');
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const formData = new FormData(form);
-      fetch(scriptURL, {
-        method: 'POST',
-        body: new URLSearchParams(formData)
-      })
-      .then(response => {
+  const form = document.getElementById('menu-form');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    fetch(scriptURL, {
+      method: 'POST',
+      body: new URLSearchParams(formData)
+    })
+    .then(response => response.text())
+    .then(result => {
+      if (result.includes("OK")) {
         alert('Menu berhasil dikirim!');
         form.reset();
-      })
-      .catch(error => {
-        alert('Gagal mengirim menu.');
-        console.error('Error!', error.message);
-      });
+      } else {
+        alert('Gagal mengirim menu: ' + result);
+      }
+    })
+    .catch(error => {
+      alert('Gagal mengirim menu.');
+      console.error('Error!', error.message);
     });
-  </script>
+  });
+</script>
+
 </body>
 </html>
