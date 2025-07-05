@@ -74,7 +74,7 @@
   <script>
     // Token akan dimasukkan melalui prompt setelah login
 let GITHUB_TOKEN = null;
-    const ADMIN_PASSWORD = "admin5758";
+    const ADMIN_PASSWORD = "RamesanTebet22";
 
     function cekPassword() {
       const input = document.getElementById("password").value;
@@ -131,6 +131,7 @@ let GITHUB_TOKEN = null;
 
         if (res.ok) {
           alert('Menu berhasil disimpan.');
+          window.location.href = 'index.html?t=' + Date.now();
         } else {
           alert('Gagal menyimpan: ' + (result.message || 'unknown error'));
         }
