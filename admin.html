@@ -92,7 +92,7 @@
           },
           body: JSON.stringify({
             message: `update menu ${tanggal}`,
-            content: btoa(unescape(encodeURIComponent(fileContent))),
+            content: btoa(unescape(encodeURIComponent(fileContent))), // Unicode-safe base64
             sha: data.sha
           })
         });
