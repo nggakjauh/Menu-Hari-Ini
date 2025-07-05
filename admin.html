@@ -3,177 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Ramesan Tebet</title>
+  <title>Admin Ramesan Tebet</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f3f3f3;
-      margin: 0;
-      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
     }
     .container {
-      background-color: #fff;
+      background: white;
       padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      width: 90%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       max-width: 400px;
-    }
-    h2 {
-      text-align: center;
-      color: #333;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      color: #555;
+      width: 100%;
     }
     input, textarea, button {
+      display: block;
       width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.6rem;
+      font-size: 1rem;
       border-radius: 8px;
       border: 1px solid #ccc;
-      box-sizing: border-box;
     }
     button {
-      background-color: #1e88e5;
+      background: #1e88e5;
       color: white;
       border: none;
       cursor: pointer;
-      margin-top: 1.5rem;
     }
     button:hover {
-      background-color: #1565c0;
+      background: #1565c0;
     }
-    ul {
-      list-style: none;
-      padding: 0;
+    label {
       margin-top: 1rem;
-    }
-    li {
-      padding: 0.5rem;
-      border-bottom: 1px solid #eee;
-      color: #555;
-    }
-    .hapus-btn {
-      background-color: #e53935;
-      margin-top: 1rem;
-    }
-    .hapus-btn:hover {
-      background-color: #c62828;
+      display: block;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="container" id="login-box">
-    <h2>Login Admin</h2>
-    <form id="login-form">
-      <label for="admin-password">Password:</label>
-      <input type="password" id="admin-password" required>
-      <button type="submit">Login</button>
-    </form>
-  </div>
+  <div class="container">
+    <h2>Update Menu Hari Ini</h2>
+    <label for="token">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</label>
+    <input type="password" id="token" placeholder="GitHub Personal Access Token">
 
-  <div class="container" id="form-box" style="display:none;">
-    <h2>Input / Ganti Menu Hari Ini</h2>
-    <form id="menu-form">
-      <label for="tanggal">Tanggal (YYYY-MM-DD):</label>
-      <input type="date" id="tanggal" name="tanggal" required>
+    <label for="tanggal">Tanggal (YYYY-MM-DD)</label>
+    <input type="date" id="tanggal">
 
-      <label for="menu">Menu (pisahkan dengan titik koma):</label>
-      <textarea id="menu" name="menu" rows="4" required></textarea>
+    <label for="menu">Menu (pisahkan dengan titik koma)</label>
+    <textarea id="menu" rows="4" placeholder="Nasi Goreng; Es Teh; Ayam Bakar"></textarea>
 
-      <button type="submit">Simpan Menu</button>
-    </form>
-    <button class="hapus-btn" onclick="hapusMenuHariIni()">Hapus Menu Hari Ini</button>
-    <h3 style="margin-top: 2rem;">Semua Data Menu</h3>
-    <ul id="menu-list"></ul>
+    <button onclick="simpanMenu()">Simpan Menu</button>
   </div>
 
   <script>
-    const ADMIN_PASSWORD = "RamesanTebet22";
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwcUo3JkJ4nrNp4550P8BmJw2UPstNgtYkbjXvtg3w2uZxXjbcZgSH_d5gQol1JhWLILg/exec";
+    async function simpanMenu() {
+      const token = document.getElementById('token').value.trim();
+      const tanggal = document.getElementById('tanggal').value;
+      const menu = document.getElementById('menu').value.split(';').map(m => m.trim()).filter(m => m);
 
-    document.getElementById("login-form").addEventListener("submit", function (e) {
-      e.preventDefault();
-      login();
-    });
-
-    function login() {
-      const inputPassword = document.getElementById("admin-password").value;
-      if (inputPassword === ADMIN_PASSWORD) {
-        document.getElementById("login-box").style.display = "none";
-        document.getElementById("form-box").style.display = "block";
-        loadMenu();
-      } else {
-        alert("Password salah!");
+      if (!token || !tanggal || menu.length === 0) {
+        alert('Isi semua data dengan benar.');
+        return;
       }
-    }
 
-    const form = document.getElementById('menu-form');
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const formData = new FormData(form);
+      const fileContent = JSON.stringify({ tanggal, menu }, null, 2);
+      const repo = "nggakjauh/Menu-Hari-Ini";
+      const path = "menu.json";
 
-      fetch(scriptURL, {
-        method: 'POST',
-        body: new URLSearchParams(formData)
-      })
-      .then(response => response.text())
-      .then(result => {
-        if (result.includes("OK")) {
-          alert('Menu berhasil disimpan atau diperbarui.');
-          form.reset();
-          loadMenu();
-        } else {
-          alert('Gagal menyimpan menu: ' + result);
-        }
-      })
-      .catch(error => {
-        alert('Gagal menyimpan menu.');
-        console.error('Error!', error.message);
-      });
-    });
-
-    function loadMenu() {
-      fetch(scriptURL)
-        .then(response => response.json())
-        .then(data => {
-          const menuList = document.getElementById('menu-list');
-          menuList.innerHTML = '';
-          data.forEach(item => {
-            const li = document.createElement('li');
-            li.textContent = `${item.tanggal} — ${item.menu}`;
-            menuList.appendChild(li);
-          });
-        })
-        .catch(err => {
-          console.error('Gagal memuat menu:', err);
+      try {
+        // ambil SHA dulu
+        const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+          headers: { Authorization: `token ${token}` }
         });
-    }
+        const data = await getRes.json();
 
-    function hapusMenuHariIni() {
-      const today = new Date().toISOString().split('T')[0];
-      if (confirm(`Yakin ingin menghapus semua menu tanggal ${today}?`)) {
-        fetch(scriptURL + `?hapus=${today}`)
-          .then(r => r.text())
-          .then(result => {
-            if (result.includes("OK")) {
-              alert('Menu hari ini berhasil dihapus.');
-              loadMenu();
-            } else {
-              alert('Gagal menghapus: ' + result);
-            }
+        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `update menu ${tanggal}`,
+            content: btoa(unescape(encodeURIComponent(fileContent))),
+            sha: data.sha
           })
-          .catch(err => {
-            alert('Gagal menghapus menu.');
-            console.error(err);
-          });
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          alert('Menu berhasil disimpan.');
+        } else {
+          alert('Gagal menyimpan: ' + (result.message || 'unknown error'));
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan: ' + err.message);
       }
     }
   </script>
