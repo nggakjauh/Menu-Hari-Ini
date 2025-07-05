@@ -15,7 +15,6 @@
       align-items: center;
       height: 100vh;
     }
-
     .container {
       background: white;
       border-radius: 16px;
@@ -25,46 +24,39 @@
       width: 90%;
       text-align: center;
     }
-
     .logo {
-  max-width: 240px;
-  margin-bottom: 1.5rem;
-}
-
+      max-width: 240px;
+      margin-bottom: 1.5rem;
+    }
     h1 {
       font-size: 1.8rem;
       margin-bottom: 1rem;
       color: #333;
     }
-
     ul {
       list-style: none;
       padding: 0;
       text-align: center;
     }
-
     li {
       padding: 0.5rem 0;
       border-bottom: 1px solid #eee;
       font-size: 1.1rem;
       color: #555;
     }
-
     .date {
       margin-top: 1rem;
       font-style: italic;
       color: #888;
     }
-
     footer {
       margin-top: 2rem;
       font-size: 0.9rem;
       color: #aaa;
     }
-      a.social-icon img {
+    a.social-icon img {
       transition: transform 0.3s ease, filter 0.3s ease;
     }
-
     a.social-icon img:hover {
       transform: scale(1.15);
       filter: brightness(1.2);
@@ -80,57 +72,54 @@
       <li>Memuat...</li>
     </ul>
     <p class="date" id="date-info">Sedang memuat tanggal...</p>
-    <footer>
-      &copy; 2025 Ramesan Tebet
-    </footer>
+    <footer>&copy; 2025 Ramesan Tebet</footer>
     <div style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1.5rem;">
-  <a href="https://wa.me/6281234567890" target="_blank" class="social-icon">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 48px; height: 48px;">
-  </a>
-  <a href="https://www.instagram.com/ramesantebet" target="_blank" class="social-icon">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" style="width: 48px; height: 48px;">
-  </a>
-  <a href="https://www.tiktok.com/@ramesantebet" target="_blank" class="social-icon">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/TikTok_logo.svg" alt="TikTok" style="width: 48px; height: 48px;">
-  </a>
-</div>
+      <a href="https://wa.me/6281234567890" target="_blank" class="social-icon">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 48px; height: 48px;">
+      </a>
+      <a href="https://www.instagram.com/ramesantebet" target="_blank" class="social-icon">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" style="width: 48px; height: 48px;">
+      </a>
+      <a href="https://www.tiktok.com/@ramesantebet" target="_blank" class="social-icon">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/TikTok_logo.svg" alt="TikTok" style="width: 48px; height: 48px;">
+      </a>
+    </div>
   </div>
 
   <script>
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLjhSHp-mToDOMXCMrsvp819udyGqVAEg0U2VqBMaQWoDkrTC_RIxP8ZhswC49VqXZWaJM5LD6_8-T/pub?output=csv"; // ganti dengan URL CSV publik Anda
+    const sheetURL = "https://script.google.com/macros/s/AKfycbyGDKqgEa4Q1TPG5u_5dSByJQGln9AICCO-_Cabxvpb_Qp0tnSjG83ezcOME1-GCmawOA/exec";
 
     function formatDate(date) {
       return date.toISOString().split('T')[0];
     }
 
     async function loadMenu() {
-      const response = await fetch(sheetURL);
-      const text = await response.text();
-      const rows = text.split('\n').slice(1); // skip header
-      const today = formatDate(new Date());
+      try {
+        const response = await fetch(sheetURL);
+        const data = await response.json();
+        const today = formatDate(new Date());
 
-      for (const row of rows) {
-        const [tanggal, menu] = row.split(',');
-        if (tanggal === today) {
-          const items = menu.split(';').map(item => item.trim());
-          const menuList = document.getElementById('menu-list');
-          menuList.innerHTML = '';
-          items.forEach(item => {
-            const li = document.createElement('li');
-            li.textContent = item;
-            menuList.appendChild(li);
-          });
-          document.getElementById('date-info').textContent = 'Diperbarui: ' + new Date().toLocaleDateString('id-ID');
-          return;
+        const todayMenu = data.find(item => item.tanggal === today);
+        const menuList = document.getElementById('menu-list');
+        const dateInfo = document.getElementById('date-info');
+
+        if (todayMenu) {
+          menuList.innerHTML = todayMenu.menu
+            .split(';')
+            .map(item => `<li>${item.trim()}</li>`)
+            .join('');
+          dateInfo.textContent = 'Diperbarui: ' + new Date().toLocaleDateString('id-ID');
+        } else {
+          menuList.innerHTML = '<li>Belum ada menu hari ini</li>';
+          dateInfo.textContent = '';
         }
+      } catch (error) {
+        document.getElementById('menu-list').innerHTML = '<li>Gagal memuat menu.</li>';
+        console.error('Fetch error:', error);
       }
-
-      // Jika tidak ada menu untuk hari ini
-      document.getElementById('menu-list').innerHTML = '<li>Belum ada menu hari ini.</li>';
-      document.getElementById('date-info').textContent = '';
     }
 
     loadMenu();
   </script>
 </body>
-</html> 
+</html>
