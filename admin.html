@@ -60,6 +60,13 @@
       border-bottom: 1px solid #eee;
       color: #555;
     }
+    .hapus-btn {
+      background-color: #e53935;
+      margin-top: 1rem;
+    }
+    .hapus-btn:hover {
+      background-color: #c62828;
+    }
   </style>
 </head>
 <body>
@@ -81,6 +88,8 @@
 
       <button type="submit">Simpan Menu</button>
     </form>
+    <button class="hapus-btn" onclick="hapusMenuHariIni()">Hapus Menu Hari Ini</button>
+    <h3 style="margin-top: 2rem;">Semua Data Menu</h3>
     <ul id="menu-list"></ul>
   </div>
 
@@ -128,27 +137,37 @@
       fetch(scriptURL)
         .then(response => response.json())
         .then(data => {
-          const today = new Date().toISOString().split('T')[0];
-          const todayMenu = data.find(item => item.tanggal === today);
           const menuList = document.getElementById('menu-list');
           menuList.innerHTML = '';
-
-          if (todayMenu) {
-            const items = todayMenu.menu.split(';');
-            items.forEach(item => {
-              const li = document.createElement('li');
-              li.textContent = item.trim();
-              menuList.appendChild(li);
-            });
-          } else {
+          data.forEach(item => {
             const li = document.createElement('li');
-            li.textContent = 'Belum ada menu hari ini.';
+            li.textContent = `${item.tanggal} — ${item.menu}`;
             menuList.appendChild(li);
-          }
+          });
         })
         .catch(err => {
           console.error('Gagal memuat menu:', err);
         });
+    }
+
+    function hapusMenuHariIni() {
+      const today = new Date().toISOString().split('T')[0];
+      if (confirm(`Yakin ingin menghapus semua menu tanggal ${today}?`)) {
+        fetch(scriptURL + `?hapus=${today}`)
+          .then(r => r.text())
+          .then(result => {
+            if (result.includes("OK")) {
+              alert('Menu hari ini berhasil dihapus.');
+              loadMenu();
+            } else {
+              alert('Gagal menghapus: ' + result);
+            }
+          })
+          .catch(err => {
+            alert('Gagal menghapus menu.');
+            console.error(err);
+          });
+      }
     }
   </script>
 </body>
