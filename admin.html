@@ -53,12 +53,16 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Admin Ramesan Tebet</h2>
-    <form id="menu-form">
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
+  <div class="container" id="login-box">
+    <h2>Login Admin</h2>
+    <label for="admin-password">Password:</label>
+    <input type="password" id="admin-password" required>
+    <button onclick="login()">Login</button>
+  </div>
 
+  <div class="container" id="form-box" style="display:none;">
+    <h2>Input Menu Ramesan Tebet</h2>
+    <form id="menu-form">
       <label for="tanggal">Tanggal (YYYY-MM-DD):</label>
       <input type="date" id="tanggal" name="tanggal" required>
 
@@ -70,18 +74,22 @@
   </div>
 
   <script>
+    const ADMIN_PASSWORD = "RamesanTebet22";
     const scriptURL = "https://script.google.com/macros/s/AKfycbyGDKqgEa4Q1TPG5u_5dSByJQGln9AICCO-_Cabxvpb_Qp0tnSjG83ezcOME1-GCmawOA/exec";
-    const form = document.getElementById('menu-form');
 
+    function login() {
+      const inputPassword = document.getElementById("admin-password").value;
+      if (inputPassword === ADMIN_PASSWORD) {
+        document.getElementById("login-box").style.display = "none";
+        document.getElementById("form-box").style.display = "block";
+      } else {
+        alert("Password salah!");
+      }
+    }
+
+    const form = document.getElementById('menu-form');
     form.addEventListener('submit', e => {
       e.preventDefault();
-
-      const password = document.getElementById('password').value;
-      if (password !== "RamesanTebet22") {
-        alert("Password salah!");
-        return;
-      }
-
       const formData = new FormData(form);
       fetch(scriptURL, {
         method: 'POST',
