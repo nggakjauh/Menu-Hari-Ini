@@ -50,9 +50,6 @@
 <body>
   <div class="container">
     <h2>Update Menu Hari Ini</h2>
-    <label for="token">GitHub Token (1x saja)</label>
-    <input type="password" id="token" placeholder="GitHub Personal Access Token">
-
     <label for="tanggal">Tanggal (YYYY-MM-DD)</label>
     <input type="date" id="tanggal">
 
@@ -63,12 +60,13 @@
   </div>
 
   <script>
+    const GITHUB_TOKEN = "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";
+
     async function simpanMenu() {
-      const token = document.getElementById('token').value.trim();
       const tanggal = document.getElementById('tanggal').value;
       const menu = document.getElementById('menu').value.split(';').map(m => m.trim()).filter(m => m);
 
-      if (!token || !tanggal || menu.length === 0) {
+      if (!tanggal || menu.length === 0) {
         alert('Isi semua data dengan benar.');
         return;
       }
@@ -78,21 +76,24 @@
       const path = "menu.json";
 
       try {
-        // ambil SHA dulu
         const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-          headers: { Authorization: `token ${token}` }
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            Accept: 'application/vnd.github+json'
+          }
         });
         const data = await getRes.json();
 
         const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
           method: 'PUT',
           headers: {
-            Authorization: `token ${token}`,
-            'Content-Type': 'application/json'
+            Authorization: `token ${GITHUB_TOKEN}`,
+            'Content-Type': 'application/json',
+            Accept: 'application/vnd.github+json'
           },
           body: JSON.stringify({
             message: `update menu ${tanggal}`,
-            content: btoa(unescape(encodeURIComponent(fileContent))), // Unicode-safe base64
+            content: btoa(unescape(encodeURIComponent(fileContent))),
             sha: data.sha
           })
         });
