@@ -45,22 +45,45 @@
       display: block;
       font-weight: bold;
     }
+    #form-section {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Update Menu Hari Ini</h2>
-    <label for="tanggal">Tanggal (YYYY-MM-DD)</label>
-    <input type="date" id="tanggal">
+    <div id="login-section">
+      <h2>Login Admin</h2>
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Masukkan password">
+      <button onclick="cekPassword()">Masuk</button>
+    </div>
 
-    <label for="menu">Menu (pisahkan dengan titik koma)</label>
-    <textarea id="menu" rows="4" placeholder="Nasi Goreng; Es Teh; Ayam Bakar"></textarea>
+    <div id="form-section">
+      <h2>Update Menu Hari Ini</h2>
+      <label for="tanggal">Tanggal (YYYY-MM-DD)</label>
+      <input type="date" id="tanggal">
 
-    <button onclick="simpanMenu()">Simpan Menu</button>
+      <label for="menu">Menu (pisahkan dengan titik koma)</label>
+      <textarea id="menu" rows="4" placeholder="Nasi Goreng; Es Teh; Ayam Bakar"></textarea>
+
+      <button onclick="simpanMenu()">Simpan Menu</button>
+    </div>
   </div>
 
   <script>
-    const GITHUB_TOKEN = "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";
+    const GITHUB_TOKEN = "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";
+    const ADMIN_PASSWORD = "admin22";
+
+    function cekPassword() {
+      const input = document.getElementById("password").value;
+      if (input === ADMIN_PASSWORD) {
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("form-section").style.display = "block";
+      } else {
+        alert("Password salah!");
+      }
+    }
 
     async function simpanMenu() {
       const tanggal = document.getElementById('tanggal').value;
