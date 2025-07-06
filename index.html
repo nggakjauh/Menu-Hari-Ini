@@ -113,8 +113,7 @@
   try {
     const response = await fetch(sheetURL + "&nocache=" + Date.now());
     const text = await response.text();
-    const rows = text.trim().split("
-").slice(1); // skip header
+    const rows = text.trim().split("\n").slice(1); // baris-baris setelah header
     const today = new Date().toISOString().split("T")[0];
     const menuList = document.getElementById("menu-list");
     const dateInfo = document.getElementById("date-info");
@@ -140,6 +139,7 @@
     console.error(err);
   }
 }
+
 
 loadMenu();
   </script>
