@@ -55,13 +55,6 @@
       font-size: 0.9rem;
       color: #aaa;
     }
-    a.social-icon img {
-      transition: transform 0.3s ease, filter 0.3s ease;
-    }
-    a.social-icon img:hover {
-      transform: scale(1.15);
-      filter: brightness(1.2);
-    }
     .refresh-button {
       margin-top: 1rem;
       padding: 0.5rem 1rem;
@@ -75,52 +68,42 @@
     .refresh-button:hover {
       background-color: #1565c0;
     }
-    #toast {
-      position: absolute;
-      top: -40px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #323232;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      pointer-events: none;
+      a.social-icon img {
+      transition: transform 0.3s ease, filter 0.3s ease;
     }
-    #toast.show {
-      opacity: 1;
+
+    a.social-icon img:hover {
+      transform: scale(1.15);
+      filter: brightness(1.2);
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div id="toast">🔄 Memuat ulang menu...</div>
     <img src="logo.png" alt="Ramesan Tebet Logo" class="logo">
-    <p style="margin-top: -1rem; margin-bottom: 1.5rem; color: #666; font-size: 1rem;">Buka setiap hari: 11.00 – 21.00 WIB</p>
+    <p style="margin-top: -1rem; margin-bottom: 1.5rem; color: #666; font-size: 1rem;">Buka setiap hari: 10.00 – 21.00 WIB</p>
     <h1>Menu Hari Ini</h1>
     <ul id="menu-list">
       <li>Memuat...</li>
     </ul>
     <p class="date" id="date-info">Sedang memuat tanggal...</p>
-    <button class="refresh-button" onclick="manualReload()">🔄 Muat Ulang Menu</button>
+    <button class="refresh-button" onclick="loadMenu()">🔄 Muat Ulang Menu</button>
     <footer>&copy; 2025 Ramesan Tebet</footer>
     <div style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1.5rem;">
       <a href="https://wa.me/6281234567890" target="_blank" class="social-icon">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 48px; height: 48px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 40px; height: 40px;">
       </a>
       <a href="https://www.instagram.com/ramesantebet" target="_blank" class="social-icon">
-        <img src="instagram.png" alt="Instagram" style="width: 48px; height: 48px;">
+        <img src="instagram.png" alt="Instagram" style="width: 40px; height: 40px;">
       </a>
       <a href="https://www.tiktok.com/@ramesantebet" target="_blank" class="social-icon">
-        <img src="tiktok.png" alt="TikTok" style="width: 48px; height: 48px;">
+        <img src="tiktok.png" alt="TikTok" style="width: 40px; height: 40px;">
       </a>
     </div>
   </div>
 
   <script>
-    const apiURL = "https://api.github.com/repos/nggakjauh/Menu-Hari-Ini/contents/menu.json";
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLjhSHp-mToDOMXCMrsvp819udyGqVAEg0U2VqBMaQWoDkrTC_RIxP8ZhswC49VqXZWaJM5LD6_8-T/pub?output=csv";
 
     function formatDate(date) {
       return date.toISOString().split('T')[0];
@@ -128,45 +111,36 @@
 
     async function loadMenu() {
       try {
-        const res = await fetch(apiURL);
-        const json = await res.json();
-        const content = atob(json.content);
-        const data = JSON.parse(content);
+        const response = await fetch(sheetURL + "&nocache=" + Date.now());
+        const text = await response.text();
+        const rows = text.trim().split('\n').slice(1); // skip header
         const today = formatDate(new Date());
+        const menuList = document.getElementById("menu-list");
+        const dateInfo = document.getElementById("date-info");
 
-        if (data.tanggal === today) {
-          const menuList = document.getElementById('menu-list');
-          menuList.innerHTML = '';
-          data.menu.forEach(item => {
-            const li = document.createElement('li');
-            li.textContent = item;
-            menuList.appendChild(li);
-          });
-          document.getElementById('date-info').textContent = 'Diperbarui: ' + new Date().toLocaleDateString('id-ID');
-        } else {
-          document.getElementById('menu-list').innerHTML = '<li>Belum ada menu hari ini.</li>';
-          document.getElementById('date-info').textContent = '';
+        for (const row of rows) {
+          const [tanggal, menu] = row.split(',');
+          if (tanggal === today) {
+            menuList.innerHTML = "";
+            menu.split(';').forEach(item => {
+              const li = document.createElement("li");
+              li.textContent = item.trim();
+              menuList.appendChild(li);
+            });
+            dateInfo.textContent = "Diperbarui: " + new Date().toLocaleDateString("id-ID");
+            return;
+          }
         }
+
+        menuList.innerHTML = "<li>Belum ada menu hari ini.</li>";
+        dateInfo.textContent = "";
       } catch (err) {
-        document.getElementById('menu-list').innerHTML = '<li>Gagal memuat menu.</li>';
-        console.error('Error memuat menu:', err);
+        document.getElementById("menu-list").innerHTML = "<li>Gagal memuat menu.</li>";
+        console.error(err);
       }
     }
 
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2000);
-    }
-
-    function manualReload() {
-      showToast('🔄 Memuat ulang menu...');
-      loadMenu();
-    }
-
     loadMenu();
-    setInterval(loadMenu, 30000);
   </script>
 </body>
 </html>
